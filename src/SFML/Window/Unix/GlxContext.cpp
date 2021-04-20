@@ -432,7 +432,7 @@ void GlxContext::updateSettingsFromVisualInfo(XVisualInfo* visualInfo)
 
     m_settings.depthBits         = static_cast<unsigned int>(depth);
     m_settings.stencilBits       = static_cast<unsigned int>(stencil);
-    m_settings.antialiasingLevel = multiSampling ? samples : 0;
+    m_settings.antialiasingLevel = multiSampling ? static_cast<unsigned int>(samples) : 0;
     m_settings.sRgbCapable       = (sRgb == True);
 }
 
@@ -676,9 +676,9 @@ void GlxContext::createContext(GlxContext* shared)
             if ((m_settings.majorVersion > 1) || ((m_settings.majorVersion == 1) && (m_settings.minorVersion > 1)))
             {
                 attributes.push_back(GLX_CONTEXT_MAJOR_VERSION_ARB);
-                attributes.push_back(m_settings.majorVersion);
+                attributes.push_back(static_cast<int>(m_settings.majorVersion));
                 attributes.push_back(GLX_CONTEXT_MINOR_VERSION_ARB);
-                attributes.push_back(m_settings.minorVersion);
+                attributes.push_back(static_cast<int>(m_settings.minorVersion));
             }
 
             // Check if setting the profile is supported

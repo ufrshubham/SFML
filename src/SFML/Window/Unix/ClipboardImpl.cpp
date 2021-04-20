@@ -307,7 +307,7 @@ void ClipboardImpl::processEvent(XEvent& windowEvent)
                         32,
                         PropModeReplace,
                         reinterpret_cast<unsigned char*>(&targets[0]),
-                        targets.size()
+                        static_cast<int>(targets.size())
                     );
 
                     // Notify the requestor that they can read the targets from their window property
@@ -330,7 +330,7 @@ void ClipboardImpl::processEvent(XEvent& windowEvent)
                         8,
                         PropModeReplace,
                         reinterpret_cast<const unsigned char*>(data.c_str()),
-                        data.size()
+                        static_cast<int>(data.size())
                     );
 
                     // Notify the requestor that they can read the data from their window property
@@ -354,7 +354,7 @@ void ClipboardImpl::processEvent(XEvent& windowEvent)
                         8,
                         PropModeReplace,
                         reinterpret_cast<const unsigned char*>(data.c_str()),
-                        data.size()
+                        static_cast<int>(data.size())
                     );
 
                     // Notify the requestor that they can read the data from their window property

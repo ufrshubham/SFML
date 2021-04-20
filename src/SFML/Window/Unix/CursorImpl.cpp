@@ -73,17 +73,17 @@ bool CursorImpl::loadFromPixels(const Uint8* pixels, Vector2u size, Vector2u hot
 bool CursorImpl::loadFromPixelsARGB(const Uint8* pixels, Vector2u size, Vector2u hotspot)
 {
     // Create cursor image, convert from RGBA to ARGB.
-    XcursorImage* cursorImage = XcursorImageCreate(size.x, size.y);
+    XcursorImage* cursorImage = XcursorImageCreate(static_cast<int>(size.x), static_cast<int>(size.y));
     cursorImage->xhot = hotspot.x;
     cursorImage->yhot = hotspot.y;
 
     const std::size_t numPixels = size.x * size.y;
     for (std::size_t pixelIndex = 0; pixelIndex < numPixels; ++pixelIndex)
     {
-        cursorImage->pixels[pixelIndex] = pixels[pixelIndex * 4 + 2] +
-                                         (pixels[pixelIndex * 4 + 1] << 8) +
-                                         (pixels[pixelIndex * 4 + 0] << 16) +
-                                         (pixels[pixelIndex * 4 + 3] << 24);
+        cursorImage->pixels[pixelIndex] = static_cast<Uint8>(pixels[pixelIndex * 4 + 2] +
+                                                            (pixels[pixelIndex * 4 + 1] << 8) +
+                                                            (pixels[pixelIndex * 4 + 0] << 16) +
+                                                            (pixels[pixelIndex * 4 + 3] << 24));
     }
 
     // Create the cursor.
@@ -131,14 +131,18 @@ bool CursorImpl::loadFromPixelsMonochrome(const Uint8* pixels, Vector2u size, Ve
     }
 
     Pixmap maskPixmap = XCreateBitmapFromData(m_display, XDefaultRootWindow(m_display),
-                                              (char*)&mask[0], size.x, size.y);
+                                              reinterpret_cast<char*>(&mask[0]), size.x, size.y);
     Pixmap dataPixmap = XCreateBitmapFromData(m_display, XDefaultRootWindow(m_display),
-                                              (char*)&data[0], size.x, size.y);
+                                              reinterpret_cast<char*>(&data[0]), size.x, size.y);
 
     // Define the foreground color as white and the background as black.
     XColor fg, bg;
-    fg.red = fg.blue = fg.green = -1;
-    bg.red = bg.blue = bg.green =  0;
+    fg.red   = 0xFFFF;
+    fg.blue  = 0xFFFF;
+    fg.green = 0xFFFF;
+    bg.red   = 0x0000;
+    bg.blue  = 0x0000;
+    bg.green = 0x0000;
 
     // Create the monochrome cursor.
     m_cursor = XCreatePixmapCursor(m_display,
