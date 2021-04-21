@@ -71,7 +71,7 @@ void Transformable::setPosition(const Vector2f& position)
 ////////////////////////////////////////////////////////////
 void Transformable::setRotation(float angle)
 {
-    m_rotation = static_cast<float>(fmod(angle, 360));
+    m_rotation = std::fmod(angle, 360.f);
     if (m_rotation < 0)
         m_rotation += 360.f;
 

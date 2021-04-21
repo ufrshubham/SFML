@@ -81,7 +81,7 @@ a((color & 0x000000ff) >> 0 )
 ////////////////////////////////////////////////////////////
 Uint32 Color::toInteger() const
 {
-    return (r << 24) | (g << 16) | (b << 8) | a;
+    return static_cast<Uint32>((r << 24) | (g << 16) | (b << 8) | a);
 }
 
 

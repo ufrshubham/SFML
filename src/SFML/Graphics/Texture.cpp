@@ -273,7 +273,7 @@ bool Texture::loadFromImage(const Image& image, const IntRect& area)
         if (rectangle.top + rectangle.height > height) rectangle.height = height - rectangle.top;
 
         // Create the texture and upload the pixels
-        if (create(rectangle.width, rectangle.height))
+        if (create(static_cast<unsigned int>(rectangle.width), static_cast<unsigned int>(rectangle.height)))
         {
             TransientContextLock lock;
 
@@ -367,8 +367,8 @@ Image Texture::copyToImage() const
         // Then we copy the useful pixels from the temporary array to the final one
         const Uint8* src = &allPixels[0];
         Uint8* dst = &pixels[0];
-        int srcPitch = m_actualSize.x * 4;
-        int dstPitch = m_size.x * 4;
+        unsigned int srcPitch = m_actualSize.x * 4;
+        unsigned int dstPitch = m_size.x * 4;
 
         // Handle the case where source pixels are flipped vertically
         if (m_pixelsFlipped)
@@ -753,15 +753,15 @@ void Texture::bind(const Texture* texture, CoordinateType coordinateType)
             // setup scale factors that convert the range [0 .. size] to [0 .. 1]
             if (coordinateType == Pixels)
             {
-                matrix[0] = 1.f / texture->m_actualSize.x;
-                matrix[5] = 1.f / texture->m_actualSize.y;
+                matrix[0] = 1.f / static_cast<float>(texture->m_actualSize.x);
+                matrix[5] = 1.f / static_cast<float>(texture->m_actualSize.y);
             }
 
             // If pixels are flipped we must invert the Y axis
             if (texture->m_pixelsFlipped)
             {
                 matrix[5] = -matrix[5];
-                matrix[13] = static_cast<float>(texture->m_size.y) / texture->m_actualSize.y;
+                matrix[13] = static_cast<float>(texture->m_size.y) / static_cast<float>(texture->m_actualSize.y);
             }
 
             // Load the matrix
