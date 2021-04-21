@@ -242,11 +242,11 @@ Socket::Status TcpSocket::send(const void* data, std::size_t size, std::size_t& 
     }
 
     // Loop until every byte has been sent
-    int result = 0;
-    for (sent = 0; sent < size; sent += result)
+    ssize_t result = 0;
+    for (sent = 0; sent < size; sent += static_cast<std::size_t>(result))
     {
         // Send a chunk of data
-        result = ::send(getHandle(), static_cast<const char*>(data) + sent, static_cast<int>(size - sent), flags);
+        result = ::send(getHandle(), static_cast<const char*>(data) + sent, static_cast<priv::SocketImpl::Size>(size - sent), flags);
 
         // Check for errors
         if (result < 0)
@@ -278,12 +278,12 @@ Socket::Status TcpSocket::receive(void* data, std::size_t size, std::size_t& rec
     }
 
     // Receive a chunk of bytes
-    int sizeReceived = recv(getHandle(), static_cast<char*>(data), static_cast<int>(size), flags);
+    std::size_t sizeReceived = static_cast<std::size_t>(recv(getHandle(), static_cast<char*>(data), static_cast<priv::SocketImpl::Size>(size), flags));
 
     // Check the number of bytes received
     if (sizeReceived > 0)
     {
-        received = static_cast<std::size_t>(sizeReceived);
+        received = sizeReceived;
         return Done;
     }
     else if (sizeReceived == 0)
@@ -326,7 +326,7 @@ Socket::Status TcpSocket::send(Packet& packet)
 
     // Send the data block
     std::size_t sent;
-    Status status = send(&blockToSend[0] + packet.m_sendPos, blockToSend.size() - packet.m_sendPos, sent);
+    Status status = send(&blockToSend[0] + packet.m_sendPos, static_cast<priv::SocketImpl::Size>(blockToSend.size() - packet.m_sendPos), sent);
 
     // In the case of a partial send, record the location to resume from
     if (status == Partial)

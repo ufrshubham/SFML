@@ -549,7 +549,7 @@ Ftp::Response Ftp::DataChannel::open(Ftp::TransferMode mode)
                 // Extract the current number
                 while (isdigit(str[index]))
                 {
-                    data[i] = data[i] * 10 + (str[index] - '0');
+                    data[i] = data[i] * 10 + static_cast<Uint8>(str[index] - '0');
                     index++;
                 }
 

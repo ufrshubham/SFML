@@ -114,7 +114,7 @@ Socket::Status UdpSocket::send(const void* data, std::size_t size, const IpAddre
     sockaddr_in address = priv::SocketImpl::createAddress(remoteAddress.toInteger(), remotePort);
 
     // Send the data (unlike TCP, all the data is always sent in one call)
-    int sent = sendto(getHandle(), static_cast<const char*>(data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&address), sizeof(address));
+    std::size_t sent = static_cast<std::size_t>(sendto(getHandle(), static_cast<const char*>(data), static_cast<priv::SocketImpl::Size>(size), 0, reinterpret_cast<sockaddr*>(&address), sizeof(address)));
 
     // Check for errors
     if (sent < 0)
@@ -144,14 +144,14 @@ Socket::Status UdpSocket::receive(void* data, std::size_t size, std::size_t& rec
 
     // Receive a chunk of bytes
     priv::SocketImpl::AddrLength addressSize = sizeof(address);
-    int sizeReceived = recvfrom(getHandle(), static_cast<char*>(data), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&address), &addressSize);
+    std::size_t sizeReceived = static_cast<std::size_t>(recvfrom(getHandle(), static_cast<char*>(data), static_cast<priv::SocketImpl::Size>(size), 0, reinterpret_cast<sockaddr*>(&address), &addressSize));
 
     // Check for errors
     if (sizeReceived < 0)
         return priv::SocketImpl::getErrorStatus();
 
     // Fill the sender informations
-    received      = static_cast<std::size_t>(sizeReceived);
+    received      = sizeReceived;
     remoteAddress = IpAddress(ntohl(address.sin_addr.s_addr));
     remotePort    = ntohs(address.sin_port);
 
